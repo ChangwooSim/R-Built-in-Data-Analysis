@@ -1,0 +1,137 @@
+---
+title: "Halley's Life Table"
+author: "TeamM"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# 주제 설명
+#1693년 영국의 유명한 천문학자 에드먼드 할리는 카스파르 노이만(Caspar Neumann)에 의해 왕립학회에 전해진 브레슬라우(Breslau) 시의 출생과 사망 기록을 연구했다. 그는 같은 해에 태어난 코호트에서 어떤 나이까지 생존하는 사람의 수를 보여주는 생명표를 만들었다. 그는 또한 그의 테이블을 삶의 연금 가격을 계산하는데 사용했다.
+```
+
+
+### 데이터 불러오기
+```{r}
+library(HistData)
+library(ggplot2)
+help(package = "HistData")
+data("HalleyLifeTable")
+```
+
+### 데이터 구조 파악하기
+```{r}
+data("HalleyLifeTable")
+a1 <- HalleyLifeTable
+str(a1)
+View(a1)
+```
+
+### 브레슬라우 시의 추정 인구수 구해보기
+```{r}
+sum(a1$number)
+```
+
+### 브레슬라우 시의 나이에 따른 생존자 수 그래프로 나타내기
+
+### 그래프 1
+```{r}
+plot(number ~ age, data=HalleyLifeTable, type="h", xlab="나이", ylab="생존자 수", main="브레슬라우 시의 나이에 따른 생존자 수")
+```
+
+### 그래프 2
+```{r}
+plot(number ~ age, data=HalleyLifeTable, type="o", col=4, xlab="나이", ylab="생존자 수", main="브레슬라우 시의 나이에 따른 생존자 수")
+```
+
+### 브레슬라우 시의 나이에 따른 생존자 수 산점도와 회귀계수로 나타내보기
+
+### 1.단순선형 회귀분석
+```{r}
+fit <- lm(number ~ age, data=HalleyLifeTable)
+summary(fit)
+```
+
+### 2.산점도와 회귀계수 그려보기
+```{r}
+plot(number ~ age, data=HalleyLifeTable, xlab="나이", ylab="생존자 수", main="브레슬라우 시의 나이에 따른 생존자 수")
+abline(fit, col="darkred", lwd=2)
+```
+
+### 브레슬라우 시의 인구를 피라미드 형태로 나타내보기
+```{r}
+plot(age ~ number, data=HalleyLifeTable, type="l", xlab="생존자 수", ylab="나이", main="브레슬라우 시의 인구 피라미드")
+with(HalleyLifeTable, segments(0, age, number, age, lwd=2)) 
+```
+
+### 브레슬라우 시의 나이에 따른 사망자 수 그래프로 나타내기
+
+### 그래프 1
+```{r}
+plot(deaths ~ age, data=HalleyLifeTable, type="h", xlab="나이", ylab="사망자 수", main="브레슬라우 시의 나이에 따른 사망자 수")
+```
+
+### 그래프 1
+```{r}
+plot(deaths ~ age, data=HalleyLifeTable, type="o", xlab="나이", ylab="사망자 수", col=2, main="브레슬라우 시의 나이에 따른 사망자 수")
+```
+
+### 브레슬라우 시의 나이에 따른 사망자 수 산점도와 회귀계수로 나타내보기
+
+### 1.단순선형 회귀분석
+```{r}
+fit2 <- lm(deaths ~ age, data=HalleyLifeTable)
+summary(fit2)
+```
+
+### 2.산점도와 회귀계수 그려보기
+```{r}
+plot(deaths ~ age, data=HalleyLifeTable, xlab="나이", ylab="사망자 수", main="브레슬라우 시의 나이에 따른 사망자 수")
+abline(fit2, col="darkred", lwd=2)
+```
+
+### 브레슬라우 시의 나이에 따른 생존자 수와 사망자 수 비교해보기
+```{r}
+x <-HalleyLifeTable$age
+y1 <-HalleyLifeTable$number
+y2 <-HalleyLifeTable$deaths
+plot(x, y1, type = "b", frame = FALSE, pch = 19,
+     col = "red", xlab = "나이", ylab = "사람 수", main= "브레슬라우 시의 나이에 따른 생존자 수와 사망자 수",
+     lty = 1, lwd = 1)
+box()
+lines(x, y2, pch = 18, col = "blue", type = "b", 
+      lty = 1, lwd = 1)
+legend("topright", legend = c("생존자 수", "사망자 수"),
+       col = c("red", "blue"), lty = 1:1, cex = 0.8)
+```
+
+
+### 브레슬라우 시의 조건부 생존 확률 그래프로 나타내보기
+
+### 그래프 1 
+```{r}
+plot(ratio ~ age, data=HalleyLifeTable, type="h",xlab="나이", ylab="1년더 생존할 확률",main="브레슬라우 시의 조건부 생존 확률 ")
+```
+
+### 그래프 2
+```{r}
+plot(ratio ~ age, data=HalleyLifeTable, type="o", col=4,xlab="나이", ylab="1년더 생존할 확률",main="브레슬라우 시의 조건부 생존 확률 ")
+```
+
+### 브레슬라우 시의 나이에 따른 조건부 생존 확률을 산점도와 회귀계수로 나타내보기
+
+### 1.단순선형 회귀분석
+```{r}
+fit3 <- lm(ratio~ age, data=HalleyLifeTable)
+summary(fit3)
+```
+
+### 2.산점도와 회귀계수 그려보기
+```{r}
+plot(ratio ~ age, data=HalleyLifeTable, xlab="나이", ylab="1년 더 생존할 확률", main="브레슬라우 시의 나이에 따른 조건부 생존 확률 ")
+abline(fit3, col="darkred", lwd=2)
+```
